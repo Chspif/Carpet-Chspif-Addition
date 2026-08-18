@@ -1,0 +1,57 @@
+final int mcVersion = project.mcVersion as int
+
+apply plugin: 'net.fabricmc.fabric-loom'
+apply plugin: 'com.replaymod.preprocess'
+
+preprocess {
+}
+
+repositories {
+	maven { url = 'https://masa.dy.fi/maven' }
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation "carpet:fabric-carpet:${project.carpet_core_version}"
+}
+
+JavaVersion JAVA_VERSION
+if (mcVersion >= 260000) {
+	JAVA_VERSION = JavaVersion.VERSION_25
+} else if (mcVersion >= 12005) {
+	JAVA_VERSION = JavaVersion.VERSION_21
+} else {
+	JAVA_VERSION = JavaVersion.VERSION_17
+}
+
+group = project.maven_group
+
+base.archivesName = project.archives_base_name
+version = "v${project.mod_version}-mc${project.minecraft_version}"
+
+processResources {
+	inputs.property "version", project.mod_version
+
+	filesMatching("fabric.mod.json") {
+		def valueMap = [
+			"id": project.mod_id,
+			"name": project.mod_name,
+			"version": project.mod_version,
+			"carpet_dependency": project.carpet_dependency,
+			"minecraft_dependency": project.minecraft_dependency,
+		]
+		expand valueMap
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = "UTF-8"
+	it.options.release = 25
+}
+
+java {
+	withSourcesJar()
+	sourceCompatibility = JAVA_VERSION
+	targetCompatibility = JAVA_VERSION
+}

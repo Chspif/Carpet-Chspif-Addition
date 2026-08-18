@@ -1,0 +1,26 @@
+{
+	"schemaVersion": 1,
+	"id": "${id}",
+	"version": "${version}",
+	"name": "${name}",
+	"description": "Chspif 服务器的 Carpet 拓展。",
+	"authors": [
+		"Chspif"
+	],
+	"license": "MIT",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"chspif.CarpetChspifMod"
+		]
+	},
+	"mixins": [
+		"carpet-chspif.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "${minecraft_dependency}",
+		"java": ">=25",
+		"carpet": "${carpet_dependency}"
+	}
+}

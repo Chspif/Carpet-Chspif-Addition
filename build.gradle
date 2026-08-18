@@ -1,0 +1,31 @@
+plugins {
+	id 'net.fabricmc.fabric-loom' version "${loom_version}" apply false
+	id 'com.replaymod.preprocess' version "${preprocess_version}"
+}
+
+preprocess {
+	preprocess.strictExtraMappings.set(false)
+
+	def mc2602 = createNode('26.2', 26_02_00, '')
+}
+
+tasks.register('buildAndGather') {
+	subprojects {
+		dependsOn project.tasks.named('build').get()
+	}
+	doFirst {
+		println 'Gathering builds'
+		def buildLibs = { p -> p.buildDir.toPath().resolve('libs') }
+		delete fileTree(buildLibs(rootProject)) { include '*' }
+		subprojects {
+			copy {
+				from(buildLibs(project)) {
+					include '*.jar'
+					exclude '*-dev.jar'
+				}
+				into buildLibs(rootProject)
+				duplicatesStrategy DuplicatesStrategy.INCLUDE
+			}
+		}
+	}
+}
