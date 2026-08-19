@@ -1,4 +1,9 @@
 {
   "carpet.category.chspif": "Chspif",
-  "carpet.rule.piglinIgnoreGoldTrim.desc": "猪灵会像忽视穿戴金盔甲的玩家一样忽视穿戴含有金纹饰盔甲的玩家"
+  "carpet.rule.piglinIgnoreGoldTrim.desc": "猪灵会像忽视穿戴金盔甲的玩家一样忽视穿戴含有金纹饰盔甲的玩家",
+  "carpet.rule.commandSend.desc": "使用 `/send` 命令打开快捷邮寄界面,提供一种类似假人邮寄的更方便的方案。",
+  "carpet.rule.commandSmallFix.desc": "使用 `/smallfix` 命令切换正常/缩小体型",
+  "carpet.rule.glowingItems.desc": "使掉落物发光。",
+  "carpet.rule.glowingMinecarts.desc": "使矿车类发光。",
+  "carpet.rule.netheriteHoeGlassSpeed.desc": "下界合金锄可以加速挖掘玻璃类方块。"
 }

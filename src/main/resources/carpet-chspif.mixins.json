@@ -3,7 +3,10 @@
   "package": "chspif.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "PiglinAiMixin"
+    "PiglinAiMixin",
+    "ItemEntityMixin",
+    "AbstractMinecartMixin",
+    "ItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1

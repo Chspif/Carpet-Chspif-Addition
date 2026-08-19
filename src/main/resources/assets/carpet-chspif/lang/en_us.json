@@ -1,4 +1,9 @@
 {
   "carpet.category.chspif": "Chspif",
-  "carpet.rule.piglinIgnoreGoldTrim.desc": "Piglins treat players wearing armor with gold trim the same as players wearing gold armor."
+  "carpet.rule.piglinIgnoreGoldTrim.desc": "Piglins treat players wearing armor with gold trim the same as players wearing gold armor.",
+  "carpet.rule.commandSend.desc": "Use the `/send` command to open the quick mail interface, offering a more convenient option similar to fakeplayer mailing.",
+  "carpet.rule.commandSmallFix.desc": "Use the `/smallfix` command to switch between normal and small size.",
+  "carpet.rule.glowingItems.desc": "Make items glow.",
+  "carpet.rule.glowingMinecarts.desc": "Make the minecart type glow.",
+  "carpet.rule.netheriteHoeGlassSpeed.desc": "The Netherite hoe can speed up mining of glass-type blocks."
 }
