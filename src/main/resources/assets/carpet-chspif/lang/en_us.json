@@ -5,5 +5,6 @@
   "carpet.rule.commandSmallFix.desc": "Use the `/smallfix` command to switch between normal and small size.",
   "carpet.rule.glowingItems.desc": "Make items glow.",
   "carpet.rule.glowingMinecarts.desc": "Make the minecart type glow.",
-  "carpet.rule.netheriteHoeGlassSpeed.desc": "The Netherite hoe can speed up mining of glass-type blocks."
+  "carpet.rule.netheriteHoeGlassSpeed.desc": "The Netherite hoe can speed up mining of glass-type blocks.",
+  "carpet.rule.undeadAvoidCinnabar.desc": "Cinnabar can ward off evil spirits."
 }

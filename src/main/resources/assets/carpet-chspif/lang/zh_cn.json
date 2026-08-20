@@ -5,5 +5,6 @@
   "carpet.rule.commandSmallFix.desc": "使用 `/smallfix` 命令切换正常/缩小体型",
   "carpet.rule.glowingItems.desc": "使掉落物发光。",
   "carpet.rule.glowingMinecarts.desc": "使矿车类发光。",
-  "carpet.rule.netheriteHoeGlassSpeed.desc": "下界合金锄可以加速挖掘玻璃类方块。"
+  "carpet.rule.netheriteHoeGlassSpeed.desc": "下界合金锄可以加速挖掘玻璃类方块。",
+  "carpet.rule.undeadAvoidCinnabar.desc": "朱砂可以辟邪。"
 }

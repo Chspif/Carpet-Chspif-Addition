@@ -6,7 +6,9 @@
     "PiglinAiMixin",
     "ItemEntityMixin",
     "AbstractMinecartMixin",
-    "ItemMixin"
+    "ItemMixin",
+    "ZombieMixin",
+    "AbstractSkeletonMixin"
   ],
   "injectors": {
     "defaultRequire": 1

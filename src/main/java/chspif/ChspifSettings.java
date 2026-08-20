@@ -22,6 +22,9 @@ public class ChspifSettings
     @Rule(categories = {CHSPIF, FEATURE})
     public static boolean netheriteHoeGlassSpeed = false;
 
+    @Rule(categories = {CHSPIF, FEATURE})
+    public static boolean undeadAvoidCinnabar = false;
+
     @Rule(categories = {CHSPIF, COMMAND},
             options = {"0", "1", "2", "3", "4", "ops", "true", "false"},
             strict = false)

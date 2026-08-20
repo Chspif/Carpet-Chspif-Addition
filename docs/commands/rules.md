@@ -53,3 +53,12 @@
 - 默认值：`false`
 - 参考选项：`true`，`false`
 - 分类：`Chspif`，`特性`
+
+### 朱砂可以辟邪(undeadAvoidCinnabar)
+
+部分亡灵生物会被朱砂类驱赶。(详见BV1L48A67EyF)
+
+- 类型：`布尔值`
+- 默认值：`false`
+- 参考选项：`true`，`false`
+- 分类：`Chspif`，`特性`
