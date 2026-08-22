@@ -136,6 +136,10 @@ public class SharedMailBox
 
     private void save()
     {
+        if (server == null)
+        {
+            return;
+        }
         CompoundTag root = new CompoundTag();
         ListTag list = new ListTag();
         RegistryAccess registryAccess = server.registryAccess();
@@ -165,7 +169,10 @@ public class SharedMailBox
 
     public void onServerClosed()
     {
-        save();
+        if (server != null)
+        {
+            save();
+        }
         viewers.clear();
         instance = null;
     }
