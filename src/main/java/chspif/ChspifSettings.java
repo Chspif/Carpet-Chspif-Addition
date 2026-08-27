@@ -35,32 +35,33 @@ public class ChspifSettings
             strict = false)
     public static String commandSmallFix = "false";
 
+    @Rule(categories = {CHSPIF, COMMAND},
+            options = {"0", "1", "2", "3", "4", "ops", "true", "false"},
+            strict = false)
+    public static String commandChunkLoadInfo = "false";
+
     public static boolean canUseSend(CommandSourceStack source)
     {
-        if (commandSend == null)
-        {
-            return false;
-        }
-        return switch (commandSend)
-        {
-            case "true" -> true;
-            case "false" -> false;
-            case "ops", "2" -> Commands.LEVEL_GAMEMASTERS.check(source.permissions());
-            case "0" -> Commands.LEVEL_ALL.check(source.permissions());
-            case "1" -> Commands.LEVEL_MODERATORS.check(source.permissions());
-            case "3" -> Commands.LEVEL_ADMINS.check(source.permissions());
-            case "4" -> Commands.LEVEL_OWNERS.check(source.permissions());
-            default -> false;
-        };
+        return canUseCommand(commandSend, source);
     }
 
     public static boolean canUseSmallFix(CommandSourceStack source)
     {
-        if (commandSmallFix == null)
+        return canUseCommand(commandSmallFix, source);
+    }
+
+    public static boolean canUseChunkLoadInfo(CommandSourceStack source)
+    {
+        return canUseCommand(commandChunkLoadInfo, source);
+    }
+
+    private static boolean canUseCommand(String ruleValue, CommandSourceStack source)
+    {
+        if (ruleValue == null)
         {
             return false;
         }
-        return switch (commandSmallFix)
+        return switch (ruleValue)
         {
             case "true" -> true;
             case "false" -> false;

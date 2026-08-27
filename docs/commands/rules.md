@@ -62,3 +62,12 @@
 - 默认值：`false`
 - 参考选项：`true`，`false`
 - 分类：`Chspif`，`特性`
+
+### 显示区块加载等级和计算等级(commandChunkLoadInfo)
+
+使用 `/chunkloadinfo` 命令查看指定区块的加载等级和计算等级。
+
+- 类型：`字符串`
+- 默认值：`false`
+- 参考选项：`0`，`1`，`2`，`3`，`4`，`ops`，`true`，`false`
+- 分类：`Chspif`，`命令`
