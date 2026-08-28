@@ -71,3 +71,17 @@
 - 默认值：`false`
 - 参考选项：`0`，`1`，`2`，`3`，`4`，`ops`，`true`，`false`
 - 分类：`Chspif`，`命令`
+
+### 显示区块MSPT信息(commandChunkMsptInfo)
+
+使用 `/chunkmsptinfo` 等相关命令查看指定区块MSPT占用信息。
+
+    /chunkmsptinfo on/off 开启/关闭实时区块MSPT显示功能
+    /chunkmsptinfo status 显示MSPT占用前十的区块
+    /chunkmsptinfo calculate chunkpos1 chunkpos2 计算指定范围内的区块MSPT总占用
+    /chunkmsptinfo clear 清除可能残留的MSPT信息
+
+- 类型：`字符串`
+- 默认值：`false`
+- 参考选项：`0`，`1`，`2`，`3`，`4`，`ops`，`true`，`false`
+- 分类：`Chspif`，`命令`

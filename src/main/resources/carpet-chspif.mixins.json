@@ -8,7 +8,13 @@
     "AbstractMinecartMixin",
     "ItemMixin",
     "ZombieMixin",
-    "AbstractSkeletonMixin"
+    "AbstractSkeletonMixin",
+    "LevelMixin",
+    "ServerLevelMixin",
+    "NaturalSpawnerMixin",
+    "ChunkMapAccessor",
+    "DisplayAccessor",
+    "TextDisplayAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

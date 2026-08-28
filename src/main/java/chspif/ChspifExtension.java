@@ -68,6 +68,55 @@ public class ChspifExtension implements CarpetExtension {
                                 .executes(context -> showChunkInfo(context.getSource(),
                                         IntegerArgumentType.getInteger(context, "blockX"),
                                         IntegerArgumentType.getInteger(context, "blockZ"))))));
+
+        dispatcher.register(Commands.literal("chunkmsptinfo")
+                .requires(ChspifSettings::canUseChunkMsptInfo)
+                .then(Commands.literal("on")
+                        .executes(context -> {
+                            ChunkMsptRenderer.setEnabled(true);
+                            context.getSource().sendSuccess(
+                                    () -> Component.literal("区块 mspt 显示已开启"), false);
+                            return 1;
+                        }))
+                .then(Commands.literal("off")
+                        .executes(context -> {
+                            ChunkMsptRenderer.setEnabled(false);
+                            context.getSource().sendSuccess(
+                                    () -> Component.literal("区块 mspt 显示已关闭"), false);
+                            return 1;
+                        }))
+                .then(Commands.literal("status")
+                        .executes(context -> {
+                            EntityMsptSampler.startOneShot(context.getSource());
+                            context.getSource().sendSuccess(
+                                    () -> Component.literal("采样中"), false);
+                            return 1;
+                        }))
+                .then(Commands.literal("clear")
+                        .executes(context -> {
+                            ChunkMsptRenderer.requestCleanup();
+                            context.getSource().sendSuccess(
+                                    () -> Component.literal("已清理"), false);
+                            return 1;
+                        }))
+                .then(Commands.literal("calculate")
+                        .then(Commands.argument("chunkX1", IntegerArgumentType.integer())
+                                .then(Commands.argument("chunkZ1", IntegerArgumentType.integer())
+                                        .then(Commands.argument("chunkX2", IntegerArgumentType.integer())
+                                                .then(Commands.argument("chunkZ2", IntegerArgumentType.integer())
+                                                        .executes(context -> {
+                                                            ChunkPos a = new ChunkPos(
+                                                                    IntegerArgumentType.getInteger(context, "chunkX1"),
+                                                                    IntegerArgumentType.getInteger(context, "chunkZ1"));
+                                                            ChunkPos b = new ChunkPos(
+                                                                    IntegerArgumentType.getInteger(context, "chunkX2"),
+                                                                    IntegerArgumentType.getInteger(context, "chunkZ2"));
+                                                            EntityMsptSampler.startOneShotRange(context.getSource(), a,
+                                                                    b);
+                                                            context.getSource().sendSuccess(
+                                                                    () -> Component.literal("采样中"), false);
+                                                            return 1;
+                                                        })))))));
     }
 
     private static int showChunkInfo(CommandSourceStack source, int blockX, int blockZ) {
@@ -92,7 +141,27 @@ public class ChspifExtension implements CarpetExtension {
     }
 
     @Override
+    public void onServerLoadedWorlds(MinecraftServer server) {
+        ChunkMsptRenderer.requestCleanup();
+    }
+
+    @Override
+    public void onTick(MinecraftServer server) {
+        ChunkMsptRenderer.cleanupTick(server);
+        if (EntityMsptSampler.isSampling()) {
+            if (ChunkMsptRenderer.isEnabled()) {
+                EntityMsptSampler.updateCenters(server);
+            }
+            EntityMsptSampler.tick();
+        }
+        if (ChunkMsptRenderer.isEnabled()) {
+            ChunkMsptRenderer.tick(server);
+        }
+    }
+
+    @Override
     public void onServerClosed(MinecraftServer server) {
+        ChunkMsptRenderer.setEnabled(false);
         SharedMailBox.getInstance().onServerClosed();
     }
 }
