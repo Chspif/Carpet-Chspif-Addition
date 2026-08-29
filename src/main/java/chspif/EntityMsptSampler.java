@@ -1,6 +1,7 @@
 package chspif;
 
-import net.minecraft.commands.CommandSourceStack;
+import carpet.logging.Logger;
+import carpet.logging.LoggerRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -22,28 +23,29 @@ public class EntityMsptSampler
     private static final double ALPHA = 1.0 / 40.0;
     private static final long CLEAN_INTERVAL = 200;
     private static final long STALE_LIMIT = 100;
-    private static final int ONE_SHOT_TICKS = 40;
-    private static final int RANGE_RADIUS = 1;
+    private static final int ONE_SHOT_TICKS = 100;
+    private static final int RANGE_RADIUS = 0;
 
     private static final Map<ResourceKey<Level>, Map<ChunkPos, ChunkSample>> CHUNKS = new HashMap<>();
     private static final Map<ResourceKey<Level>, Map<ChunkPos, ChunkSample>> ONE_SHOT_CHUNKS = new HashMap<>();
     private static long tick = 0;
     private static boolean oneShot = false;
     private static int oneShotTicksLeft = 0;
-    private static CommandSourceStack oneShotRequester = null;
+    private static ServerPlayer oneShotRequester = null;
     private static boolean rangeMode = false;
     private static ChunkPos rangeMin = null;
     private static ChunkPos rangeMax = null;
     private static Set<ChunkPos> centers = Set.of();
 
-    public static boolean isSampling()
+    public static boolean isLiveSampling()
     {
-        return ChunkMsptRenderer.isEnabled() || oneShot;
+        Logger log = LoggerRegistry.getLogger("chunkmspt");
+        return log != null && log.hasOnlineSubscribers();
     }
 
-    public static boolean isInRange(ChunkPos pos)
+    public static boolean isSampling()
     {
-        return centers.contains(pos);
+        return isLiveSampling() || oneShot;
     }
 
     public static void updateCenters(MinecraftServer server)
@@ -67,7 +69,7 @@ public class EntityMsptSampler
         centers = set;
     }
 
-    public static void startOneShot(CommandSourceStack requester)
+    public static void startOneShot(ServerPlayer requester)
     {
         ONE_SHOT_CHUNKS.clear();
         oneShot = true;
@@ -78,7 +80,7 @@ public class EntityMsptSampler
         rangeMax = null;
     }
 
-    public static void startOneShotRange(CommandSourceStack requester, ChunkPos a, ChunkPos b)
+    public static void startOneShotRange(ServerPlayer requester, ChunkPos a, ChunkPos b)
     {
         ONE_SHOT_CHUNKS.clear();
         oneShot = true;
@@ -87,15 +89,6 @@ public class EntityMsptSampler
         rangeMode = true;
         rangeMin = new ChunkPos(Math.min(a.x(), b.x()), Math.min(a.z(), b.z()));
         rangeMax = new ChunkPos(Math.max(a.x(), b.x()), Math.max(a.z(), b.z()));
-    }
-
-    public static void stopSampling()
-    {
-        oneShot = false;
-        oneShotRequester = null;
-        rangeMode = false;
-        rangeMin = null;
-        rangeMax = null;
     }
 
     private static boolean inCalcRange(ChunkPos pos)
@@ -155,7 +148,7 @@ public class EntityMsptSampler
 
     private static void accumulate(ResourceKey<Level> dim, ChunkPos pos, double ms, Source source, boolean isEntity)
     {
-        if (ChunkMsptRenderer.isEnabled() && centers.contains(pos))
+        if (isLiveSampling() && centers.contains(pos))
         {
             ChunkSample sample = CHUNKS.computeIfAbsent(dim, k -> new HashMap<>())
                     .computeIfAbsent(pos, k -> new ChunkSample());
@@ -202,7 +195,7 @@ public class EntityMsptSampler
             updateEma(ONE_SHOT_CHUNKS);
             if (--oneShotTicksLeft <= 0)
             {
-                CommandSourceStack requester = oneShotRequester;
+                ServerPlayer requester = oneShotRequester;
                 boolean isRange = rangeMode;
                 ChunkPos rMin = rangeMin;
                 ChunkPos rMax = rangeMax;

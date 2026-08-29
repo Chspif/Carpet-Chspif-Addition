@@ -1,120 +1,89 @@
 package chspif;
 
-import chspif.mixins.ChunkMapAccessor;
-import chspif.mixins.DisplayAccessor;
-import chspif.mixins.TextDisplayAccessor;
-import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongIterator;
-import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.DistanceManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Display;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.entity.EntityTypeTest;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class ChunkMsptRenderer {
-    private static final int UPDATE_INTERVAL = 20;
-    private static boolean enabled = false;
-    private static int tickCounter = 0;
-    private static final Map<ResourceKey<Level>, Map<ChunkPos, Display.TextDisplay>> displays = new HashMap<>();
-
-    public static boolean isEnabled() {
-        return enabled;
-    }
-
-    public static void setEnabled(boolean value) {
-        if (enabled != value) {
-            enabled = value;
-            if (!value) {
-                EntityMsptSampler.reset();
-            }
-        }
-        if (!value) {
-            for (Map<ChunkPos, Display.TextDisplay> dim : displays.values()) {
-                for (Display.TextDisplay display : dim.values()) {
-                    display.discard();
-                }
-            }
-            displays.clear();
-            requestCleanup();
-        }
-        EntityMsptSampler.stopSampling();
-    }
-
-    private static boolean pendingCleanup = false;
-
-    public static void requestCleanup() {
-        pendingCleanup = true;
-    }
-
-    public static void cleanupTick(MinecraftServer server) {
-        if (!pendingCleanup) {
+public class ChunkMsptRenderer
+{
+    public static void printTopChunks(ServerPlayer player, boolean fromOneShot)
+    {
+        if (player == null)
+        {
             return;
         }
-        pendingCleanup = false;
-        for (ServerLevel level : server.getAllLevels()) {
-            List<Display.TextDisplay> leftovers = new ArrayList<>();
-            level.getEntities(EntityTypeTest.forClass(Display.TextDisplay.class), e -> true, leftovers,
-                    Integer.MAX_VALUE);
-            for (Display.TextDisplay display : leftovers) {
-                Component name = display.getCustomName();
-                if (name != null && "chspif_mspt".equals(name.getString())) {
-                    display.discard();
-                }
-            }
-        }
-    }
-
-    public static void printTopChunks(CommandSourceStack source, boolean fromOneShot) {
-        if (source == null) {
-            return;
-        }
-        ServerLevel level = source.getLevel();
+        ServerLevel level = (ServerLevel) player.level();
         List<EntityMsptSampler.ChunkInfo> top = fromOneShot
                 ? EntityMsptSampler.getOneshotTopChunks(level.dimension(), 10)
                 : EntityMsptSampler.getLiveTopChunks(level.dimension(), 10);
-        if (top.isEmpty()) {
-            source.sendSuccess(() -> Component.literal("暂无采样数据"), false);
+        if (top.isEmpty())
+        {
+            player.sendSystemMessage(Component.literal("暂无采样数据"));
             return;
         }
         long avgNanos = level.getServer().getAverageTickTimeNanos();
         double avgMs = avgNanos / 1_000_000.0;
-        for (int i = 0; i < top.size(); i++) {
+        DistanceManager distanceManager = level.getChunkSource().chunkMap.getDistanceManager();
+        for (int i = 0; i < top.size(); i++)
+        {
             EntityMsptSampler.ChunkInfo info = top.get(i);
             int rank = i + 1;
             double pct = avgMs <= 0 ? 0 : info.total / avgMs * 100.0;
-            source.sendSuccess(() -> Component.literal(
-                    "第" + rank + "名 区块 (" + info.pos.x() + ", " + info.pos.z() + ") 总"
-                            + String.format("%.2fms 实体%d 占tick%.1f%%", info.total, info.count, pct)),
-                    false);
+            int loadLevel = distanceManager.getChunkLevel(info.pos.pack(), false);
+            int computeLevel = distanceManager.getChunkLevel(info.pos.pack(), true);
+            player.sendSystemMessage(Component.literal(
+                    "第" + rank + "名 区块 (" + info.pos.x() + ", " + info.pos.z() + ") 总")
+                    .append(Component.literal(String.format("%.2f", info.total)).withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal("ms 实体")
+                            .append(Component.literal(String.valueOf(info.count)).withStyle(ChatFormatting.GREEN)))
+                    .append(Component.literal(" 占tick"))
+                    .append(Component.literal(String.format("%.1f", pct)).withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal("% 加载等级"))
+                    .append(Component.literal(String.valueOf(loadLevel)).withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(" 计算等级"))
+                    .append(Component.literal(String.valueOf(computeLevel)).withStyle(ChatFormatting.GREEN)));
         }
     }
 
-    public static void printRangeTotal(CommandSourceStack source, ChunkPos min, ChunkPos max) {
-        if (source == null || min == null || max == null) {
+    public static void printRangeTotal(ServerPlayer player, ChunkPos min, ChunkPos max)
+    {
+        if (player == null || min == null || max == null)
+        {
             return;
         }
-        ServerLevel level = source.getLevel();
+        ServerLevel level = (ServerLevel) player.level();
         List<EntityMsptSampler.ChunkInfo> all = EntityMsptSampler.getOneshotTopChunks(level.dimension(),
                 Integer.MAX_VALUE);
         double total = 0;
+        double eu = 0;
+        double tt = 0;
+        double ct = 0;
+        double bu = 0;
+        double ms = 0;
+        double be = 0;
+        double te = 0;
         long entitySum = 0;
         int count = 0;
-        for (EntityMsptSampler.ChunkInfo info : all) {
+        for (EntityMsptSampler.ChunkInfo info : all)
+        {
             if (info.pos.x() >= min.x() && info.pos.x() <= max.x()
-                    && info.pos.z() >= min.z() && info.pos.z() <= max.z()) {
+                    && info.pos.z() >= min.z() && info.pos.z() <= max.z())
+            {
                 total += info.total;
+                eu += info.entity;
+                tt += info.blockTick + info.fluidTick;
+                ct += info.randomTick + info.thunder;
+                bu += info.neighborUpdate;
+                ms += info.spawning;
+                be += info.blockEvent;
+                te += info.blockEntity;
                 entitySum += info.count;
                 count++;
             }
@@ -122,114 +91,61 @@ public class ChunkMsptRenderer {
         long avgNanos = level.getServer().getAverageTickTimeNanos();
         double avgMs = avgNanos / 1_000_000.0;
         double pct = avgMs <= 0 ? 0 : total / avgMs * 100.0;
-        double finalTotal = total;
-        int finalCount = count;
-        long finalEntitySum = entitySum;
-        source.sendSuccess(() -> Component.literal(
-                "范围 (" + min.x() + "," + min.z() + ")~(" + max.x() + "," + max.z() + ") 总mspt "
-                        + String.format("%.2fms 区块%d 实体%d 占tick%.1f%%", finalTotal, finalCount, finalEntitySum, pct)),
-                false);
+        player.sendSystemMessage(Component.literal(
+                "范围 X(" + min.x() + "~" + max.x() + ") Z(" + min.z() + "~" + max.z() + ") 总mspt ")
+                .append(Component.literal(String.format("%.2f", total)).withStyle(ChatFormatting.GREEN))
+                .append(Component.literal("ms 区块")
+                        .append(Component.literal(String.valueOf(count)).withStyle(ChatFormatting.GREEN)))
+                .append(Component.literal(" 实体")
+                        .append(Component.literal(String.valueOf(entitySum)).withStyle(ChatFormatting.GREEN)))
+                .append(Component.literal(" 占tick"))
+                .append(Component.literal(String.format("%.1f", pct)).withStyle(ChatFormatting.GREEN))
+                .append(Component.literal("%")));
+        player.sendSystemMessage(triple("EU", eu, "TT", tt, "CT", ct));
+        player.sendSystemMessage(quad("BU", bu, "MS", ms, "BE", be, "TE", te));
     }
 
-    public static void tick(MinecraftServer server) {
-        if (!enabled) {
-            return;
+    public static Component[] hudForPlayer(Player player)
+    {
+        ChunkPos pos = player.chunkPosition();
+        EntityMsptSampler.ChunkInfo info = EntityMsptSampler.getChunkInfo(player.level().dimension(), pos);
+        if (info == null)
+        {
+            return new Component[]{Component.literal("区块 (" + pos.x() + "," + pos.z() + ") 暂无数据")};
         }
-        if (++tickCounter % UPDATE_INTERVAL != 0) {
-            return;
-        }
-        for (ServerLevel level : server.getAllLevels()) {
-            renderLevel(level);
-        }
+        Component first = Component.literal("区块 (" + pos.x() + "," + pos.z() + ")").withStyle(ChatFormatting.GRAY)
+                .append(Component.literal(" 总").withStyle(ChatFormatting.GRAY))
+                .append(Component.literal(String.format(" %.2fms", info.total)).withStyle(ChatFormatting.GREEN))
+                .append(Component.literal(" 实体").withStyle(ChatFormatting.GRAY))
+                .append(Component.literal(" " + info.count).withStyle(ChatFormatting.GREEN));
+        return new Component[]{
+                first,
+                triple("EU", info.entity, "TT", info.blockTick + info.fluidTick,
+                        "CT", info.randomTick + info.thunder),
+                quad("BU", info.neighborUpdate, "MS", info.spawning,
+                        "BE", info.blockEvent, "TE", info.blockEntity)
+        };
     }
 
-    private static void renderLevel(ServerLevel level) {
-        ResourceKey<Level> dim = level.dimension();
-        Long2ObjectLinkedOpenHashMap<ChunkHolder> visible = ((ChunkMapAccessor) (Object) level
-                .getChunkSource().chunkMap).chspifGetVisibleChunkMap();
-        Map<ChunkPos, Display.TextDisplay> dimDisplays = displays.computeIfAbsent(dim, k -> new HashMap<>());
-
-        LongIterator it = visible.keySet().iterator();
-        while (it.hasNext()) {
-            long key = it.nextLong();
-            ChunkPos pos = ChunkPos.unpack(key);
-            if (!EntityMsptSampler.isInRange(pos)) {
-                Display.TextDisplay old = dimDisplays.remove(pos);
-                if (old != null) {
-                    old.discard();
-                }
-                continue;
-            }
-            ChunkHolder holder = visible.get(key);
-            if (holder == null || holder.getTickingChunk() == null) {
-                Display.TextDisplay old = dimDisplays.remove(pos);
-                if (old != null) {
-                    old.discard();
-                }
-                continue;
-            }
-            Display.TextDisplay display = dimDisplays.get(pos);
-            if (display == null || display.isRemoved()) {
-                display = spawn(level, pos);
-                dimDisplays.put(pos, display);
-            }
-            updatePosition(display, level, pos);
-            updateText(display, pos);
-        }
-
-        dimDisplays.entrySet().removeIf(entry -> {
-            if (!visible.containsKey(entry.getKey().pack()) || !EntityMsptSampler.isInRange(entry.getKey())) {
-                entry.getValue().discard();
-                return true;
-            }
-            return false;
-        });
+    private static MutableComponent quad(String l1, double v1, String l2, double v2, String l3, double v3, String l4,
+            double v4)
+    {
+        return labeled(l1, v1).append(Component.literal("  ").withStyle(ChatFormatting.GRAY))
+                .append(labeled(l2, v2)).append(Component.literal("  ").withStyle(ChatFormatting.GRAY))
+                .append(labeled(l3, v3)).append(Component.literal("  ").withStyle(ChatFormatting.GRAY))
+                .append(labeled(l4, v4));
     }
 
-    private static Display.TextDisplay spawn(ServerLevel level, ChunkPos pos) {
-        Display.TextDisplay display = new Display.TextDisplay(EntityTypes.TEXT_DISPLAY, level);
-        display.setPos(pos.getMiddleBlockX() + 0.5, targetY(level, pos), pos.getMiddleBlockZ() + 0.5);
-        display.setCustomName(Component.literal("chspif_mspt"));
-        ((DisplayAccessor) display).chspifSetBillboard(Display.BillboardConstraints.CENTER);
-        TextDisplayAccessor accessor = (TextDisplayAccessor) display;
-        accessor.chspifSetBackgroundColor(0);
-        accessor.chspifSetTextOpacity((byte) -1);
-        accessor.chspifSetLineWidth(400);
-        level.addFreshEntity(display);
-        return display;
+    private static MutableComponent triple(String l1, double v1, String l2, double v2, String l3, double v3)
+    {
+        return labeled(l1, v1).append(Component.literal("  ").withStyle(ChatFormatting.GRAY))
+                .append(labeled(l2, v2)).append(Component.literal("  ").withStyle(ChatFormatting.GRAY))
+                .append(labeled(l3, v3));
     }
 
-    private static double targetY(ServerLevel level, ChunkPos pos) {
-        ServerPlayer nearest = null;
-        double bestSq = Double.MAX_VALUE;
-        for (ServerPlayer player : level.players()) {
-            if (player.isRemoved()) {
-                continue;
-            }
-            double dx = player.getX() - (pos.getMiddleBlockX() + 0.5);
-            double dz = player.getZ() - (pos.getMiddleBlockZ() + 0.5);
-            double sq = dx * dx + dz * dz;
-            if (sq < bestSq) {
-                bestSq = sq;
-                nearest = player;
-            }
-        }
-        return nearest == null ? 320 : nearest.getEyeY() - 1.5;
-    }
-
-    private static void updatePosition(Display.TextDisplay display, ServerLevel level, ChunkPos pos) {
-        display.setPos(pos.getMiddleBlockX() + 0.5, targetY(level, pos), pos.getMiddleBlockZ() + 0.5);
-    }
-
-    private static void updateText(Display.TextDisplay display, ChunkPos pos) {
-        EntityMsptSampler.ChunkInfo info = EntityMsptSampler.getChunkInfo(display.level().dimension(), pos);
-        if (info == null) {
-            return;
-        }
-        String text = String.format(
-                "实体数%d 总%.2fms\n实体%.2f 方块实体%.2f\n方块计划刻%.2f 流体计划刻%.2f\n随机刻%.2f 方块事件%.2f 邻接更新%.2f\n雷击%.2f 生物生成%.2f",
-                info.count, info.total, info.entity, info.blockEntity, info.blockTick, info.fluidTick,
-                info.randomTick, info.blockEvent, info.neighborUpdate, info.thunder, info.spawning);
-        ((TextDisplayAccessor) display).chspifSetText(Component.literal(text));
+    private static MutableComponent labeled(String label, double value)
+    {
+        return Component.literal(label + ": ").withStyle(ChatFormatting.GRAY)
+                .append(Component.literal(String.format("%.2f", value)).withStyle(ChatFormatting.GREEN));
     }
 }

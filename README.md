@@ -1,8 +1,9 @@
 # Carpet-Chspif-Addition
 
-## 规则
+## 文档
 
-[所有规则](docs/commands/rules.md)
+[规则](docs/commands/rules.md)
+[记录器](docs/commands/loggers.md)
 
 ## 版本支持
 

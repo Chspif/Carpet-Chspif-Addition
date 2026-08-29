@@ -40,11 +40,6 @@ public class ChspifSettings
             strict = false)
     public static String commandChunkLoadInfo = "false";
 
-    @Rule(categories = {CHSPIF, COMMAND},
-            options = {"0", "1", "2", "3", "4", "ops", "true", "false"},
-            strict = false)
-    public static String commandChunkMsptInfo = "false";
-
     public static boolean canUseSend(CommandSourceStack source)
     {
         return canUseCommand(commandSend, source);
@@ -59,6 +54,11 @@ public class ChspifSettings
     {
         return canUseCommand(commandChunkLoadInfo, source);
     }
+
+    @Rule(categories = {CHSPIF, COMMAND},
+            options = {"0", "1", "2", "3", "4", "ops", "true", "false"},
+            strict = false)
+    public static String commandChunkMsptInfo = "false";
 
     public static boolean canUseChunkMsptInfo(CommandSourceStack source)
     {

@@ -3,16 +3,21 @@ package chspif.mixins;
 import chspif.EntityMsptSampler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockEventData;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.entity.EntityTickList;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.redstone.Orientation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.function.Consumer;
 
 @Mixin(ServerLevel.class)
 public class ServerLevelMixin
@@ -171,6 +176,25 @@ public class ServerLevelMixin
             {
                 EntityMsptSampler.recordThunder((ServerLevel) (Object) this, chunk.getPos(), (System.nanoTime() - start) / 1_000_000.0);
             }
+        }
+    }
+
+    @Redirect(method = "tick(Ljava/util/function/BooleanSupplier;)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/entity/EntityTickList;forEach(Ljava/util/function/Consumer;)V"))
+    private void chspifEntityForEach(EntityTickList entityTickList, Consumer<Entity> original)
+    {
+        if (EntityMsptSampler.isSampling())
+        {
+            entityTickList.forEach(entity ->
+            {
+                long start = System.nanoTime();
+                original.accept(entity);
+                EntityMsptSampler.recordEntity(entity, (System.nanoTime() - start) / 1_000_000.0);
+            });
+        }
+        else
+        {
+            entityTickList.forEach(original);
         }
     }
 }

@@ -12,9 +12,7 @@
     "LevelMixin",
     "ServerLevelMixin",
     "NaturalSpawnerMixin",
-    "ChunkMapAccessor",
-    "DisplayAccessor",
-    "TextDisplayAccessor"
+    "LoggerRegistryMixin"
   ],
   "injectors": {
     "defaultRequire": 1
