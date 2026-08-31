@@ -80,3 +80,12 @@
 - 默认值：`false`
 - 参考选项：`0`，`1`，`2`，`3`，`4`，`ops`，`true`，`false`
 - 分类：`Chspif`，`命令`
+
+### 更好的自定义命名(commandCustomRename)
+
+使用 `/customrename` 更好地自定义命名物品。
+
+- 类型：`字符串`
+- 默认值：`false`
+- 参考选项：`0`，`1`，`2`，`3`，`4`，`ops`，`true`，`false`
+- 分类：`Chspif`，`命令`

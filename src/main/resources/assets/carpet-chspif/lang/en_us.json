@@ -5,6 +5,7 @@
   "carpet.rule.commandSmallFix.desc": "Use the `/smallfix` command to switch between normal and small size.",
   "carpet.rule.commandChunkLoadInfo.desc": "Use the `/chunkloadinfo` command to show the load level and calculation level of the selected chunk",
   "carpet.rule.commandChunkMsptInfo.desc": "Use the `/chunkmsptinfo` command to calculate the mspt usage in a chunk range.",
+  "carpet.rule.commandCustomRename.desc": "Use the `/customrename` command to better customize named items.",
   "carpet.rule.glowingItems.desc": "Make items glow.",
   "carpet.rule.glowingMinecarts.desc": "Make the minecart type glow.",
   "carpet.rule.netheriteHoeGlassSpeed.desc": "The Netherite hoe can speed up mining of glass-type blocks.",

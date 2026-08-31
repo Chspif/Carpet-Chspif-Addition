@@ -67,6 +67,16 @@ public class ChspifSettings
         return canUseCommand(commandChunkMsptInfo, source);
     }
 
+    @Rule(categories = {CHSPIF, COMMAND},
+            options = {"0", "1", "2", "3", "4", "ops", "true", "false"},
+            strict = false)
+    public static String commandCustomRename = "false";
+
+    public static boolean canUseCustomRename(CommandSourceStack source)
+    {
+        return canUseCommand(commandCustomRename, source);
+    }
+
     //#if MC>=12111
     private static boolean canUseCommand(String ruleValue, CommandSourceStack source)
     {
