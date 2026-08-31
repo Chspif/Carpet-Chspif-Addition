@@ -1,6 +1,8 @@
 final int mcVersion = project.mcVersion as int
 
-apply plugin: 'net.fabricmc.fabric-loom'
+final boolean unobfuscated = mcVersion >= 260000
+
+apply plugin: unobfuscated ? 'net.fabricmc.fabric-loom' : 'net.fabricmc.fabric-loom-remap'
 apply plugin: 'com.replaymod.preprocess'
 
 preprocess {
@@ -12,8 +14,16 @@ repositories {
 
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	implementation "carpet:fabric-carpet:${project.carpet_core_version}"
+	if (!unobfuscated) {
+		mappings loom.officialMojangMappings()
+	}
+	if (unobfuscated) {
+		implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+		implementation "carpet:fabric-carpet:${project.carpet_core_version}"
+	} else {
+		modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+		modImplementation "carpet:fabric-carpet:${project.carpet_core_version}"
+	}
 }
 
 JavaVersion JAVA_VERSION
@@ -32,6 +42,9 @@ version = "v${project.mod_version}-mc${project.minecraft_version}"
 
 processResources {
 	inputs.property "version", project.mod_version
+	inputs.property "carpet_dependency", project.carpet_dependency
+	inputs.property "minecraft_dependency", project.minecraft_dependency
+	inputs.property "java_dependency", project.java_dependency
 
 	filesMatching("fabric.mod.json") {
 		def valueMap = [
@@ -40,6 +53,7 @@ processResources {
 			"version": project.mod_version,
 			"carpet_dependency": project.carpet_dependency,
 			"minecraft_dependency": project.minecraft_dependency,
+			"java_dependency": project.java_dependency,
 		]
 		expand valueMap
 	}
@@ -47,7 +61,8 @@ processResources {
 
 tasks.withType(JavaCompile).configureEach {
 	it.options.encoding = "UTF-8"
-	it.options.release = 25
+	def release = mcVersion >= 260000 ? 25 : (mcVersion >= 12005 ? 21 : 17)
+	it.options.release = release
 }
 
 java {

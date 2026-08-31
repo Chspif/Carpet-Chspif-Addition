@@ -144,8 +144,8 @@ public class ChspifExtension implements CarpetExtension {
             return 1;
         }
         DistanceManager distanceManager = level.getChunkSource().chunkMap.getDistanceManager();
-        int loadLevel = distanceManager.getChunkLevel(pos.pack(), false);
-        int computeLevel = distanceManager.getChunkLevel(pos.pack(), true);
+        int loadLevel = distanceManager.getChunkLevel(ChunkPosBridge.key(pos), false);
+        int computeLevel = distanceManager.getChunkLevel(ChunkPosBridge.key(pos), true);
         source.sendSuccess(() -> Component.literal("坐标 (" + blockX + ", " + blockZ + ") 区块坐标 (" + chunkX + ", " + chunkZ
                 + ") 加载等级 " + loadLevel + " 计算等级 " + computeLevel), false);
         return 1;

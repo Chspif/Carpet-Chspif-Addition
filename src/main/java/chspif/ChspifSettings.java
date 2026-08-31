@@ -22,8 +22,10 @@ public class ChspifSettings
     @Rule(categories = {CHSPIF, FEATURE})
     public static boolean netheriteHoeGlassSpeed = false;
 
+    //#if MC>=260000
     @Rule(categories = {CHSPIF, FEATURE})
     public static boolean undeadAvoidCinnabar = false;
+    //#endif
 
     @Rule(categories = {CHSPIF, COMMAND},
             options = {"0", "1", "2", "3", "4", "ops", "true", "false"},
@@ -65,6 +67,7 @@ public class ChspifSettings
         return canUseCommand(commandChunkMsptInfo, source);
     }
 
+    //#if MC>=12111
     private static boolean canUseCommand(String ruleValue, CommandSourceStack source)
     {
         if (ruleValue == null)
@@ -83,4 +86,24 @@ public class ChspifSettings
             default -> false;
         };
     }
+    //#else
+    //$$ private static boolean canUseCommand(String ruleValue, CommandSourceStack source)
+    //$$ {
+    //$$     if (ruleValue == null)
+    //$$     {
+    //$$         return false;
+    //$$     }
+    //$$     return switch (ruleValue)
+    //$$     {
+    //$$         case "true" -> true;
+    //$$         case "false" -> false;
+    //$$         case "ops", "2" -> source.hasPermission(2);
+    //$$         case "0" -> source.hasPermission(0);
+    //$$         case "1" -> source.hasPermission(1);
+    //$$         case "3" -> source.hasPermission(3);
+    //$$         case "4" -> source.hasPermission(4);
+    //$$         default -> false;
+    //$$     };
+    //$$ }
+    //#endif
 }

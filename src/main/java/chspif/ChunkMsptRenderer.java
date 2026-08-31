@@ -36,10 +36,10 @@ public class ChunkMsptRenderer
             EntityMsptSampler.ChunkInfo info = top.get(i);
             int rank = i + 1;
             double pct = avgMs <= 0 ? 0 : info.total / avgMs * 100.0;
-            int loadLevel = distanceManager.getChunkLevel(info.pos.pack(), false);
-            int computeLevel = distanceManager.getChunkLevel(info.pos.pack(), true);
+            int loadLevel = distanceManager.getChunkLevel(ChunkPosBridge.key(info.pos), false);
+            int computeLevel = distanceManager.getChunkLevel(ChunkPosBridge.key(info.pos), true);
             player.sendSystemMessage(Component.literal(
-                    "第" + rank + "名 区块 (" + info.pos.x() + ", " + info.pos.z() + ") 总")
+                    "第" + rank + "名 区块 (" + ChunkPosBridge.x(info.pos) + ", " + ChunkPosBridge.z(info.pos) + ") 总")
                     .append(Component.literal(String.format("%.2f", info.total)).withStyle(ChatFormatting.GREEN))
                     .append(Component.literal("ms 实体")
                             .append(Component.literal(String.valueOf(info.count)).withStyle(ChatFormatting.GREEN)))
@@ -73,8 +73,8 @@ public class ChunkMsptRenderer
         int count = 0;
         for (EntityMsptSampler.ChunkInfo info : all)
         {
-            if (info.pos.x() >= min.x() && info.pos.x() <= max.x()
-                    && info.pos.z() >= min.z() && info.pos.z() <= max.z())
+            if (ChunkPosBridge.x(info.pos) >= ChunkPosBridge.x(min) && ChunkPosBridge.x(info.pos) <= ChunkPosBridge.x(max)
+                    && ChunkPosBridge.z(info.pos) >= ChunkPosBridge.z(min) && ChunkPosBridge.z(info.pos) <= ChunkPosBridge.z(max))
             {
                 total += info.total;
                 eu += info.entity;
@@ -92,7 +92,7 @@ public class ChunkMsptRenderer
         double avgMs = avgNanos / 1_000_000.0;
         double pct = avgMs <= 0 ? 0 : total / avgMs * 100.0;
         player.sendSystemMessage(Component.literal(
-                "范围 X(" + min.x() + "~" + max.x() + ") Z(" + min.z() + "~" + max.z() + ") 总mspt ")
+                "范围 X(" + ChunkPosBridge.x(min) + "~" + ChunkPosBridge.x(max) + ") Z(" + ChunkPosBridge.z(min) + "~" + ChunkPosBridge.z(max) + ") 总mspt ")
                 .append(Component.literal(String.format("%.2f", total)).withStyle(ChatFormatting.GREEN))
                 .append(Component.literal("ms 区块")
                         .append(Component.literal(String.valueOf(count)).withStyle(ChatFormatting.GREEN)))
@@ -111,9 +111,9 @@ public class ChunkMsptRenderer
         EntityMsptSampler.ChunkInfo info = EntityMsptSampler.getChunkInfo(player.level().dimension(), pos);
         if (info == null)
         {
-            return new Component[]{Component.literal("区块 (" + pos.x() + "," + pos.z() + ") 暂无数据")};
+            return new Component[]{Component.literal("区块 (" + ChunkPosBridge.x(pos) + "," + ChunkPosBridge.z(pos) + ") 暂无数据")};
         }
-        Component first = Component.literal("区块 (" + pos.x() + "," + pos.z() + ")").withStyle(ChatFormatting.GRAY)
+        Component first = Component.literal("区块 (" + ChunkPosBridge.x(pos) + "," + ChunkPosBridge.z(pos) + ")").withStyle(ChatFormatting.GRAY)
                 .append(Component.literal(" 总").withStyle(ChatFormatting.GRAY))
                 .append(Component.literal(String.format(" %.2fms", info.total)).withStyle(ChatFormatting.GREEN))
                 .append(Component.literal(" 实体").withStyle(ChatFormatting.GRAY))

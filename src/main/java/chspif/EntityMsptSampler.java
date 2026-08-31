@@ -62,7 +62,7 @@ public class EntityMsptSampler
             {
                 for (int dz = -RANGE_RADIUS; dz <= RANGE_RADIUS; dz++)
                 {
-                    set.add(new ChunkPos(center.x() + dx, center.z() + dz));
+                    set.add(new ChunkPos(ChunkPosBridge.x(center) + dx, ChunkPosBridge.z(center) + dz));
                 }
             }
         }
@@ -87,14 +87,14 @@ public class EntityMsptSampler
         oneShotTicksLeft = ONE_SHOT_TICKS;
         oneShotRequester = requester;
         rangeMode = true;
-        rangeMin = new ChunkPos(Math.min(a.x(), b.x()), Math.min(a.z(), b.z()));
-        rangeMax = new ChunkPos(Math.max(a.x(), b.x()), Math.max(a.z(), b.z()));
+        rangeMin = new ChunkPos(Math.min(ChunkPosBridge.x(a), ChunkPosBridge.x(b)), Math.min(ChunkPosBridge.z(a), ChunkPosBridge.z(b)));
+        rangeMax = new ChunkPos(Math.max(ChunkPosBridge.x(a), ChunkPosBridge.x(b)), Math.max(ChunkPosBridge.z(a), ChunkPosBridge.z(b)));
     }
 
     private static boolean inCalcRange(ChunkPos pos)
     {
-        return pos.x() >= rangeMin.x() && pos.x() <= rangeMax.x()
-                && pos.z() >= rangeMin.z() && pos.z() <= rangeMax.z();
+        return ChunkPosBridge.x(pos) >= ChunkPosBridge.x(rangeMin) && ChunkPosBridge.x(pos) <= ChunkPosBridge.x(rangeMax)
+                && ChunkPosBridge.z(pos) >= ChunkPosBridge.z(rangeMin) && ChunkPosBridge.z(pos) <= ChunkPosBridge.z(rangeMax);
     }
 
     public static void recordEntity(Entity entity, double ms)
@@ -108,22 +108,22 @@ public class EntityMsptSampler
 
     public static void recordBlockEntity(Level level, BlockPos pos, double ms)
     {
-        accumulate(level.dimension(), ChunkPos.containing(pos), ms, Source.BLOCK_ENTITY, false);
+        accumulate(level.dimension(), ChunkPosBridge.of(pos), ms, Source.BLOCK_ENTITY, false);
     }
 
     public static void recordBlockTick(Level level, BlockPos pos, double ms)
     {
-        accumulate(level.dimension(), ChunkPos.containing(pos), ms, Source.BLOCK_TICK, false);
+        accumulate(level.dimension(), ChunkPosBridge.of(pos), ms, Source.BLOCK_TICK, false);
     }
 
     public static void recordFluidTick(Level level, BlockPos pos, double ms)
     {
-        accumulate(level.dimension(), ChunkPos.containing(pos), ms, Source.FLUID_TICK, false);
+        accumulate(level.dimension(), ChunkPosBridge.of(pos), ms, Source.FLUID_TICK, false);
     }
 
     public static void recordBlockEvent(Level level, BlockPos pos, double ms)
     {
-        accumulate(level.dimension(), ChunkPos.containing(pos), ms, Source.BLOCK_EVENT, false);
+        accumulate(level.dimension(), ChunkPosBridge.of(pos), ms, Source.BLOCK_EVENT, false);
     }
 
     public static void recordChunkRandom(Level level, ChunkPos pos, double ms)
@@ -133,7 +133,7 @@ public class EntityMsptSampler
 
     public static void recordNeighborUpdate(Level level, BlockPos pos, double ms)
     {
-        accumulate(level.dimension(), ChunkPos.containing(pos), ms, Source.NEIGHBOR_UPDATE, false);
+        accumulate(level.dimension(), ChunkPosBridge.of(pos), ms, Source.NEIGHBOR_UPDATE, false);
     }
 
     public static void recordThunder(Level level, ChunkPos pos, double ms)

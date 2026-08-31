@@ -1,12 +1,19 @@
 plugins {
 	id 'net.fabricmc.fabric-loom' version "${loom_version}" apply false
+	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}" apply false
 	id 'com.replaymod.preprocess' version "${preprocess_version}"
 }
 
 preprocess {
 	preprocess.strictExtraMappings.set(false)
 
+	def mc12110 = createNode('1.21.10', 1_21_10, '')
+	def mc12111 = createNode('1.21.11', 1_21_11, '')
 	def mc2602 = createNode('26.2', 26_02_00, '')
+
+
+	mc12110.link(mc12111, null)
+	mc12111.link(mc2602, null)
 }
 
 tasks.register('buildAndGather') {
