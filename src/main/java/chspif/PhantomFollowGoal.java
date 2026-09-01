@@ -1,15 +1,18 @@
 package chspif;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
+import java.util.Set;
 
 public class PhantomFollowGoal extends Goal
 {
     private static final double FOLLOW_START_DIST_SQR = 36.0;
+    private static final double TELEPORT_DIST_SQR = 144.0 * 144.0;
     private static final double FOLLOW_HEIGHT = 3.0;
 
     private final Mob phantom;
@@ -50,9 +53,18 @@ public class PhantomFollowGoal extends Goal
     public void tick()
     {
         LivingEntity owner = pet.chspifGetOwner();
-        if (owner == null || owner.level() != phantom.level())
+        if (owner == null)
         {
-            pet.chspifSetMoveTarget(phantom.position());
+            return;
+        }
+        if (owner.level() != phantom.level())
+        {
+            chspifTeleportNearOwner(owner);
+            return;
+        }
+        if (phantom.distanceToSqr(owner) > TELEPORT_DIST_SQR)
+        {
+            chspifTeleportNearOwner(owner);
             return;
         }
         if (phantom.distanceToSqr(owner) > FOLLOW_START_DIST_SQR)
@@ -63,5 +75,14 @@ public class PhantomFollowGoal extends Goal
         {
             pet.chspifSetMoveTarget(phantom.position());
         }
+    }
+
+    private void chspifTeleportNearOwner(LivingEntity owner)
+    {
+        if (!(owner.level() instanceof ServerLevel targetLevel))
+        {
+            return;
+        }
+        phantom.teleportTo(targetLevel, owner.getX(), owner.getY() + 2.0, owner.getZ(), Set.of(), owner.getYRot(), owner.getXRot(), false);
     }
 }

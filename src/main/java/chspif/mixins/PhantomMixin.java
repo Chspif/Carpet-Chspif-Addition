@@ -88,7 +88,7 @@ public abstract class PhantomMixin extends Mob implements PhantomPetAccess
         }
         if (this.level() instanceof ServerLevel serverLevel)
         {
-            return serverLevel.getPlayerByUUID(this.chspifOwnerUuid);
+            return serverLevel.getServer().getPlayerList().getPlayer(this.chspifOwnerUuid);
         }
         return null;
     }
@@ -262,9 +262,13 @@ public abstract class PhantomMixin extends Mob implements PhantomPetAccess
         {
             this.chspifCalmTicks--;
         }
-        if (this.chspifTamed && this.tickCount % PET_PARTICLE_INTERVAL == 0)
+        if (this.chspifTamed)
         {
-            this.chspifSpawnStateParticles();
+            this.setPersistenceRequired();
+            if (this.tickCount % PET_PARTICLE_INTERVAL == 0)
+            {
+                this.chspifSpawnStateParticles();
+            }
         }
     }
 
