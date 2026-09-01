@@ -12,7 +12,10 @@
     "LevelMixin",
     "ServerLevelMixin",
     "NaturalSpawnerMixin",
-    "LoggerRegistryMixin"
+    "LoggerRegistryMixin",
+    "PhantomMixin",
+    "PhantomPetMobMixin",
+    "PhantomPetEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

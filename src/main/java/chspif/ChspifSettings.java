@@ -22,6 +22,9 @@ public class ChspifSettings
     @Rule(categories = {CHSPIF, FEATURE})
     public static boolean netheriteHoeGlassSpeed = false;
 
+    @Rule(categories = {CHSPIF, FEATURE})
+    public static boolean phantomPetTaming = false;
+
     //#if MC>=260000
     @Rule(categories = {CHSPIF, FEATURE})
     public static boolean undeadAvoidCinnabar = false;

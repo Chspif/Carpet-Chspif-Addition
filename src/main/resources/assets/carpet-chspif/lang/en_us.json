@@ -9,5 +9,6 @@
   "carpet.rule.glowingItems.desc": "Make items glow.",
   "carpet.rule.glowingMinecarts.desc": "Make the minecart type glow.",
   "carpet.rule.netheriteHoeGlassSpeed.desc": "The Netherite hoe can speed up mining of glass-type blocks.",
-  "carpet.rule.undeadAvoidCinnabar.desc": "Cinnabar can ward off evil spirits."
+  "carpet.rule.undeadAvoidCinnabar.desc": "Cinnabar can ward off evil spirits.",
+  "carpet.rule.phantomPetTaming.desc": "Phantom can be tamed"
 }

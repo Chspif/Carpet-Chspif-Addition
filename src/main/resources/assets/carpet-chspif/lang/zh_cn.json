@@ -9,5 +9,6 @@
   "carpet.rule.glowingItems.desc": "使掉落物发光。",
   "carpet.rule.glowingMinecarts.desc": "使矿车类发光。",
   "carpet.rule.netheriteHoeGlassSpeed.desc": "下界合金锄可以加速挖掘玻璃类方块。",
-  "carpet.rule.undeadAvoidCinnabar.desc": "朱砂可以辟邪。"
+  "carpet.rule.undeadAvoidCinnabar.desc": "朱砂可以辟邪。",
+  "carpet.rule.phantomPetTaming.desc": "幻翼可以驯服。"
 }
