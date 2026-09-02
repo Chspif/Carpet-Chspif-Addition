@@ -59,6 +59,8 @@ public abstract class PhantomMixin extends Mob implements PhantomPetAccess
     @Unique
     private boolean chspifFireImmune;
     @Unique
+    private int chspifFireParticle;
+    @Unique
     private int chspifCalmTicks;
 
     @Override
@@ -132,6 +134,7 @@ public abstract class PhantomMixin extends Mob implements PhantomPetAccess
             {
                 item.consume(1, player);
                 this.chspifFireImmune = true;
+                this.chspifFireParticle = this.chspifRollFireParticle();
                 this.chspifSpawnStateParticles();
                 cir.setReturnValue(InteractionResult.SUCCESS);
                 return;
@@ -162,7 +165,7 @@ public abstract class PhantomMixin extends Mob implements PhantomPetAccess
         {
             item.consume(1, player);
             this.chspifCalmTicks = CALM_TICKS;
-            boolean success = this.random.nextInt(5) == 0;
+            boolean success = this.random.nextInt(20) == 0;
             if (success)
             {
                 this.chspifTamed = true;
@@ -281,6 +284,7 @@ public abstract class PhantomMixin extends Mob implements PhantomPetAccess
         }
         output.putBoolean("ChspifTamed", this.chspifTamed);
         output.putBoolean("ChspifFireImmune", this.chspifFireImmune);
+        output.putInt("ChspifFireParticle", this.chspifFireParticle);
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("HEAD"))
@@ -289,6 +293,7 @@ public abstract class PhantomMixin extends Mob implements PhantomPetAccess
         this.chspifOwnerUuid = input.getString("ChspifOwner").map(UUID::fromString).orElse(null);
         this.chspifTamed = input.getBooleanOr("ChspifTamed", false);
         this.chspifFireImmune = input.getBooleanOr("ChspifFireImmune", false);
+        this.chspifFireParticle = input.getIntOr("ChspifFireParticle", 0);
         if (this.chspifTamed)
         {
             this.setPersistenceRequired();
@@ -308,10 +313,41 @@ public abstract class PhantomMixin extends Mob implements PhantomPetAccess
     @Unique
     private void chspifSpawnStateParticles()
     {
-        ParticleOptions particle = this.chspifFireImmune ? ParticleTypes.DRIPPING_OBSIDIAN_TEAR : ParticleTypes.END_ROD;
+        ParticleOptions particle = this.chspifFireImmune ? chspifFireParticleFromIndex(this.chspifFireParticle) : ParticleTypes.END_ROD;
         if (this.level() instanceof ServerLevel serverLevel)
         {
-            serverLevel.sendParticles(particle, this.getX(), this.getY() + 0.5, this.getZ(), 2, 0.4, 0.4, 0.4, 0.02);
+            serverLevel.sendParticles(particle, this.getX(), this.getY() + 0.5, this.getZ(), 5, 0.6, 0.6, 0.6, 0.02);
         }
+    }
+
+    @Unique
+    private int chspifRollFireParticle()
+    {
+        int roll = this.random.nextInt(100);
+        if (roll < 50)
+        {
+            return 0;
+        }
+        if (roll < 80)
+        {
+            return 1;
+        }
+        if (roll < 95)
+        {
+            return 2;
+        }
+        return 3;
+    }
+
+    @Unique
+    private static ParticleOptions chspifFireParticleFromIndex(int index)
+    {
+        return switch (index)
+        {
+            case 1 -> ParticleTypes.SOUL;
+            case 2 -> ParticleTypes.FALLING_OBSIDIAN_TEAR;
+            case 3 -> ParticleTypes.CHERRY_LEAVES;
+            default -> ParticleTypes.GLOW;
+        };
     }
 }

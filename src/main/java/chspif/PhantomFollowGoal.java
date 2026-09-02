@@ -12,7 +12,7 @@ import java.util.Set;
 public class PhantomFollowGoal extends Goal
 {
     private static final double FOLLOW_START_DIST_SQR = 36.0;
-    private static final double TELEPORT_DIST_SQR = 144.0 * 144.0;
+    private static final double TELEPORT_DIST_SQR = 48.0 * 48.0;
     private static final double FOLLOW_HEIGHT = 3.0;
 
     private final Mob phantom;
@@ -28,7 +28,7 @@ public class PhantomFollowGoal extends Goal
     @Override
     public boolean canUse()
     {
-        return pet.chspifIsTamed() && !pet.chspifIsRidden();
+        return pet.chspifIsTamed() && !pet.chspifIsRidden() && !phantom.isPassenger();
     }
 
     @Override
@@ -59,7 +59,7 @@ public class PhantomFollowGoal extends Goal
         }
         if (owner.level() != phantom.level())
         {
-            chspifTeleportNearOwner(owner);
+            pet.chspifSetMoveTarget(phantom.position());
             return;
         }
         if (phantom.distanceToSqr(owner) > TELEPORT_DIST_SQR)
