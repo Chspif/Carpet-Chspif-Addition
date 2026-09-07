@@ -213,6 +213,9 @@ public class ChspifExtension implements CarpetExtension {
 
     @Override
     public void onTick(MinecraftServer server) {
+        if (ChspifSettings.overworldEnderDragonPet) {
+            EnderDragonSummoner.tick(server);
+        }
         if (EntityMsptSampler.isSampling()) {
             if (EntityMsptSampler.isLiveSampling()) {
                 EntityMsptSampler.updateCenters(server);
