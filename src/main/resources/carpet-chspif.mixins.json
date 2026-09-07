@@ -15,7 +15,8 @@
     "LoggerRegistryMixin",
     "PhantomMixin",
     "PhantomPetMobMixin",
-    "PhantomPetEntityMixin"
+    "PhantomPetEntityMixin",
+    "EnderDragonMixin"
   ],
   "injectors": {
     "defaultRequire": 1
