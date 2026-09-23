@@ -16,7 +16,6 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.LevelResource;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -129,7 +128,7 @@ public class SharedMailBox
                 }
             }
         }
-        catch (IOException e)
+        catch (Exception e)
         {
         }
     }
@@ -162,7 +161,7 @@ public class SharedMailBox
         {
             NbtIo.writeCompressed(root, playerDataPath());
         }
-        catch (IOException e)
+        catch (Exception e)
         {
         }
     }

@@ -7,10 +7,12 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.entity.player.Player;
@@ -37,7 +39,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.UUID;
 
 @Mixin(Phantom.class)
-public abstract class PhantomMixin extends Mob implements PhantomPetAccess
+public abstract class PhantomMixin extends Mob implements PhantomPetAccess, OwnableEntity
 {
     protected PhantomMixin(EntityType<? extends Mob> type, Level level)
     {
@@ -93,6 +95,12 @@ public abstract class PhantomMixin extends Mob implements PhantomPetAccess
             return serverLevel.getServer().getPlayerList().getPlayer(this.chspifOwnerUuid);
         }
         return null;
+    }
+
+    @Override
+    public EntityReference<LivingEntity> getOwnerReference()
+    {
+        return this.chspifOwnerUuid == null ? null : EntityReference.of(this.chspifOwnerUuid);
     }
 
     @Override

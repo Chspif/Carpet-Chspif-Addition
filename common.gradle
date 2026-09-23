@@ -5,11 +5,9 @@ final boolean unobfuscated = mcVersion >= 260000
 apply plugin: unobfuscated ? 'net.fabricmc.fabric-loom' : 'net.fabricmc.fabric-loom-remap'
 apply plugin: 'com.replaymod.preprocess'
 
-preprocess {
-}
-
 repositories {
 	maven { url = 'https://masa.dy.fi/maven' }
+	flatDir { dirs rootProject.file('libs') }
 }
 
 dependencies {
@@ -26,14 +24,9 @@ dependencies {
 	}
 }
 
-JavaVersion JAVA_VERSION
-if (mcVersion >= 260000) {
-	JAVA_VERSION = JavaVersion.VERSION_25
-} else if (mcVersion >= 12005) {
-	JAVA_VERSION = JavaVersion.VERSION_21
-} else {
-	JAVA_VERSION = JavaVersion.VERSION_17
-}
+final int javaTarget = mcVersion >= 260000 ? 25 : (mcVersion >= 12005 ? 21 : 17)
+final JavaVersion JAVA_VERSION = javaTarget == 25 ? JavaVersion.VERSION_25
+		: (javaTarget == 21 ? JavaVersion.VERSION_21 : JavaVersion.VERSION_17)
 
 group = project.maven_group
 
@@ -61,8 +54,7 @@ processResources {
 
 tasks.withType(JavaCompile).configureEach {
 	it.options.encoding = "UTF-8"
-	def release = mcVersion >= 260000 ? 25 : (mcVersion >= 12005 ? 21 : 17)
-	it.options.release = release
+	it.options.release = javaTarget
 }
 
 java {

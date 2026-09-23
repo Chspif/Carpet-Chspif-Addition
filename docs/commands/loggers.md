@@ -14,12 +14,8 @@
 - 方块更新运算占用MSPT，用符号BU表示
 - 生物生成运算占用MSPT，用符号MS表示
 - 方块事件运算占用MSPT，用符号BE表示
-- 方块事件运算占用MSPT，用符号TE表示
-
-![chunkmspt](https://picui.ogmua.cn/s1/2026/08/29/6a92f1fbc1ba3.webp)
+- 方块实体运算占用MSPT，用符号TE表示
 
 可用的类型选项:
 
 - `status`:输出MSPT占用前十的区块。
-
-![chunkmsptstatus](https://picui.ogmua.cn/s1/2026/08/29/6a92f1fa61623.webp)

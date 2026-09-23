@@ -210,7 +210,7 @@ public class EntityMsptSampler
                 }
                 else
                 {
-                    ChunkMsptRenderer.printTopChunks(requester, true);
+                    ChunkMsptRenderer.printTopChunks(requester);
                 }
                 ONE_SHOT_CHUNKS.clear();
             }
@@ -269,11 +269,6 @@ public class EntityMsptSampler
         return new ChunkInfo(pos, sample);
     }
 
-    public static List<ChunkInfo> getLiveTopChunks(ResourceKey<Level> dim, int n)
-    {
-        return getTopChunks(CHUNKS, dim, n);
-    }
-
     public static List<ChunkInfo> getOneshotTopChunks(ResourceKey<Level> dim, int n)
     {
         return getTopChunks(ONE_SHOT_CHUNKS, dim, n);
@@ -295,12 +290,6 @@ public class EntityMsptSampler
             result.add(new ChunkInfo(list.get(i).getKey(), list.get(i).getValue()));
         }
         return result;
-    }
-
-    public static void reset()
-    {
-        CHUNKS.clear();
-        tick = 0;
     }
 
     private enum Source

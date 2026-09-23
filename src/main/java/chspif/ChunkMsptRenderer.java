@@ -13,16 +13,14 @@ import java.util.List;
 
 public class ChunkMsptRenderer
 {
-    public static void printTopChunks(ServerPlayer player, boolean fromOneShot)
+    public static void printTopChunks(ServerPlayer player)
     {
         if (player == null)
         {
             return;
         }
         ServerLevel level = (ServerLevel) player.level();
-        List<EntityMsptSampler.ChunkInfo> top = fromOneShot
-                ? EntityMsptSampler.getOneshotTopChunks(level.dimension(), 10)
-                : EntityMsptSampler.getLiveTopChunks(level.dimension(), 10);
+        List<EntityMsptSampler.ChunkInfo> top = EntityMsptSampler.getOneshotTopChunks(level.dimension(), 10);
         if (top.isEmpty())
         {
             player.sendSystemMessage(Component.literal("暂无采样数据"));

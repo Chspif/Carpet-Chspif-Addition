@@ -41,6 +41,13 @@ jobs:
             echo "value=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Fetch carpet 26.3 dependency
+        run: |
+          mkdir -p libs
+          curl -fL -o libs/fabric-carpet-26.3+v260915.jar \
+            https://github.com/gnembon/fabric-carpet/releases/download/v26.3/fabric-carpet-26.3+v260915.jar
+          echo "7c40b93e807ed914064176898037117097446c6cc76e6a80a856c8bf7f7659f9  libs/fabric-carpet-26.3+v260915.jar" | sha256sum -c -
+
       - name: Build
         run: |
           chmod +x gradlew

@@ -61,7 +61,8 @@ public class ChspifExtension implements CarpetExtension {
             Field field = LoggerRegistry.class.getDeclaredField("__chunkmspt");
             LoggerRegistry.registerLogger("chunkmspt",
                     new ChunkMsptLogger(field, "chunkmspt", "true", new String[] { "status" }, false));
-        } catch (NoSuchFieldException ignored) {
+        } catch (NoSuchFieldException e) {
+            throw new IllegalStateException("__chunkmspt field missing: carpet-chspif.mixins.json did not apply", e);
         }
         HUDController.register(server -> driveChunkMsptLogger());
     }
