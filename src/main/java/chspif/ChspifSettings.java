@@ -25,7 +25,7 @@ public class ChspifSettings
     @Rule(categories = {CHSPIF, FEATURE})
     public static boolean phantomPetTaming = false;
 
-    //#if MC>=260000
+    //#if MC>=260200
     @Rule(categories = {CHSPIF, FEATURE})
     public static boolean undeadAvoidCinnabar = false;
     //#endif

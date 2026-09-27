@@ -61,3 +61,25 @@ java {
 	sourceCompatibility = JAVA_VERSION
 	targetCompatibility = JAVA_VERSION
 }
+
+final String extraJarNames = (project.findProperty('extra_jar_names') ?: '').toString().trim()
+
+if (!extraJarNames.isEmpty()) {
+	def extraJarsTask = tasks.register('extraJars') {
+		doLast {
+			def libsDir = project.layout.buildDirectory.dir('libs').get().asFile
+			def sourceJar = new File(libsDir, "${project.archives_base_name}-v${project.mod_version}-mc${project.minecraft_version}.jar")
+			if (!sourceJar.exists()) {
+				throw new GradleException("extraJars: main jar not found: ${sourceJar}")
+			}
+			extraJarNames.split(',').collect { it.trim() }.findAll { !it.isEmpty() }.each { name ->
+				project.copy {
+					from sourceJar
+					into libsDir
+					rename { "${project.archives_base_name}-v${project.mod_version}-mc${name}.jar" }
+				}
+			}
+		}
+	}
+	tasks.named('build').configure { finalizedBy extraJarsTask }
+}
